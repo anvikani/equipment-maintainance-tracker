@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Equipment Maintenance Tracker</title>
+  <style>
+    body { font-family: Arial; margin: 30px; }
+    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 8px; }
+    a { text-decoration: none; color: blue; }
+    button { padding: 6px 10px; margin: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Equipment Maintenance Tracker (Demo)</h2>
+  <a href="/add_asset"><button>Add New Asset</button></a>
+  <br><br>
+  <table>
+    <tr><th>ID</th><th>Name</th><th>Location</th><th>Status</th><th>Last Maintenance</th><th>Actions</th></tr>
+    {% for a in assets %}
+    <tr>
+      <td>{{ a.id }}</td>
+      <td>{{ a.name }}</td>
+      <td>{{ a.location }}</td>
+      <td>{{ a.status }}</td>
+      <td>{{ a.last_maintenance.strftime('%Y-%m-%d') }}</td>
+      <td>
+        <a href="/add_log/{{ a.id }}">Add Log</a> |
+        <a href="/view_logs/{{ a.id }}">View Logs</a> |
+        <a href="/report/{{ a.id }}"><button>Download PDF</button></a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  {% if show_logs %}
+    <h3>Maintenance Logs for {{ assets[0].name }}</h3>
+    <table>
+      <tr><th>Date</th><th>Notes</th><th>Cost</th></tr>
+      {% for l in logs %}
+      <tr><td>{{ l.date.strftime('%Y-%m-%d') }}</td><td>{{ l.notes }}</td><td>{{ l.cost }}</td></tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+</body>
+</html>
