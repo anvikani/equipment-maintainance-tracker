@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head><title>Add Maintenance Log</title></head>
+<body>
+  <h2>Add Maintenance Log for {{ asset.name }}</h2>
+  <form method="POST">
+    <label>Notes:</label><br>
+    <textarea name="notes" rows="3" cols="30" required></textarea><br><br>
+
+    <label>Cost:</label>
+    <input type="number" name="cost" step="0.01"><br><br>
+
+    <label>Date:</label>
+    <input type="date" name="date"><br><br>
+
+    <button type="submit">Save Log</button>
+  </form>
+  <a href="/">Back</a>
+</body>
+</html>
