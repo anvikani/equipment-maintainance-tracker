@@ -10,7 +10,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# ----------------- MODELS -----------------
 class Asset(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120))
@@ -25,30 +24,27 @@ class MaintenanceLog(db.Model):
     notes = db.Column(db.String(200))
     cost = db.Column(db.Float, default=0.0)
 
-# ----------------- CREATE TABLES -----------------
 with app.app_context():
     db.create_all()
 
-# ----------------- ROUTES -----------------
+
 @app.route('/')
 def index():
     assets = Asset.query.all()
     return render_template('index.html', assets=assets)
 
-# ----------------- ADD ASSET -----------------
 @app.route('/add_asset', methods=['GET', 'POST'])
 def add_asset():
     if request.method == 'POST':
         name = request.form['name']
         location = request.form['location']
-        status = request.form['status']  # get status from form
+        status = request.form['status'] 
         asset = Asset(name=name, location=location, status=status)
         db.session.add(asset)
         db.session.commit()
         return redirect('/')
     return render_template('add_asset.html')
 
-# ----------------- ADD LOG -----------------
 @app.route('/add_log/<int:asset_id>', methods=['GET', 'POST'])
 def add_log(asset_id):
     asset = Asset.query.get_or_404(asset_id)
@@ -67,14 +63,12 @@ def add_log(asset_id):
         return redirect('/')
     return render_template('add_log.html', asset=asset)
 
-# ----------------- VIEW LOGS -----------------
 @app.route('/view_logs/<int:asset_id>')
 def view_logs(asset_id):
     asset = Asset.query.get_or_404(asset_id)
     logs = MaintenanceLog.query.filter_by(asset_id=asset_id).all()
     return render_template('index.html', assets=[asset], logs=logs, show_logs=True)
 
-# ----------------- PDF REPORT -----------------
 @app.route('/report/<int:asset_id>')
 def generate_report(asset_id):
     asset = Asset.query.get_or_404(asset_id)
@@ -111,7 +105,7 @@ def generate_report(asset_id):
         total_cost += log.cost
         y -= 20
 
-    # Show total cost at bottom
+
     y -= 20
     c.setFont("Helvetica-Bold", 12)
     c.drawString(50, y, f"Total Maintenance Cost: {total_cost}")
@@ -120,6 +114,6 @@ def generate_report(asset_id):
     buffer.seek(0)
     return send_file(buffer, as_attachment=True, download_name=f"{asset.name}_report.pdf", mimetype='application/pdf')
 
-# ----------------- RUN APP -----------------
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
+
